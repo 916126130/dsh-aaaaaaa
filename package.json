@@ -1,0 +1,53 @@
+{
+  "name": "dsh-yijianhuifu",
+  "version": "1.2.0",
+  "private": false,
+  "type": "module",
+  "description": "一键恢复插件与设置：记录「能正常跑」的插件清单和设置，DSH 因插件不兼容被重置后，从侧边栏一键写回。One-click restore of plugins & settings after the third-party plugin reset.",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "snapshot",
+    "backup",
+    "restore",
+    "recovery",
+    "一键恢复"
+  ],
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "README.md"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-renderer",
+        "@deepseek-ai/dsh-client-ui-sidebar"
+      ]
+    }
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT",
+  "author": "江 + DSH",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/<your-name>/dsh-yijianhuifu.git"
+  },
+  "bugs": {
+    "url": "https://github.com/<your-name>/dsh-yijianhuifu/issues"
+  },
+  "homepage": "https://github.com/<your-name>/dsh-yijianhuifu#readme"
+}

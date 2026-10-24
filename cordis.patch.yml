@@ -1,0 +1,13 @@
+# dsh-yijianhuifu — bundle patch
+#
+# 把守护插件挂进 DSH 的插件树。挂载后在宿主进程里运行：
+#   · 启动 75 秒后（配置未被改动）把当前「插件清单 + 设置」记为「已验证」快照
+#   · 配置文件一有变化就记一条「待验证」快照
+#   · 在侧边栏「配置守护」里可以一键写回任意一份快照
+# 快照写在 ~/.dsh/guardian/snapshots/
+#
+# 卸载：从 profiles/<name>/package.json 的 dsh.profile.bundles 与 dependencies
+# 里删掉 dsh-yijianhuifu 即可（node_modules 里的目录留着不影响）。
+- insert:
+    - id: yijianhuifu
+      name: dsh-yijianhuifu
