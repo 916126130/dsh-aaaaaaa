@@ -1,9 +1,9 @@
 {
   "name": "dsh-aaaaaaa",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "private": false,
   "type": "module",
-  "description": "一键恢复插件预设置：记录「能正常跑」的插件清单与设置，重置后一键写回。若重置后本插件未启动，请手动运行 ~/.dsh/aaaaaaa-watch/run.cmd。",
+  "description": "一键守护 · 记录可用的插件与设置，重置后一键还原。One-click guardian for DSH: snapshot a working plugin setup and restore it after a reset.",
   "keywords": [
     "dsh",
     "dsh-plugin",
@@ -11,6 +11,7 @@
     "backup",
     "restore",
     "recovery",
+    "一键守护",
     "一键恢复"
   ],
   "main": "lib/index.js",
@@ -23,7 +24,8 @@
   "files": [
     "lib",
     "cordis.patch.yml",
-    "README.md"
+    "README.md",
+    "README.en.md"
   ],
   "dsh": {
     "bundle": {
