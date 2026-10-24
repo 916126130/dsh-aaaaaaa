@@ -81,6 +81,7 @@
 
 | 版本 | 说明 |
 |---|---|
+| 1.3.3 | 看门狗改用 `run-hidden.vbs` 静默启动，不再每 5 分钟闪一次窗口 |
 | 1.3.2 | 侧边栏那一行的名字也改成「一键守护」（包名/目录仍是 `dsh-aaaaaaa`，方便在插件列表里找） |
 | 1.3.1 | 面板更名「一键守护」；说明改为中英双语；文案不再描述重置后的自动行为 |
 | 1.3.0 | 改名 `dsh-aaaaaaa`；加看门狗；恢复/修复时强制保留自身；清掉旧包名残留 |
@@ -92,7 +93,7 @@
 
 ## 可选：看门狗（重置后自动写回）
 
-重置后插件本身不会被加载，面板自然不会出现。看门狗是一个**独立于 DSH 的小脚本**，由 Windows 计划任务每 5 分钟跑一次：
+重置后插件本身不会被加载，面板自然不会出现。看门狗是一个**独立于 DSH 的小脚本**，由 Windows 计划任务每 5 分钟跑一次；它通过 `run-hidden.vbs` 静默启动，**平时看不到任何窗口、也不会闪屏**，每次结果只写进 `~/.dsh/guardian/watchdog.log`：
 
 - 发现 profile 里的本插件登记被抹掉 → 立刻补回；
 - 发现启动项被重置成「只剩官方」→ 自动写回最近一份**健康快照**，并把本插件重新并入。
@@ -101,11 +102,11 @@
 
 ```powershell
 New-Item -ItemType Directory -Force "$env:USERPROFILE\.dsh\aaaaaaa-watch" | Out-Null
-Copy-Item .\watchdog\watchdog.ps1, .\watchdog\run.cmd "$env:USERPROFILE\.dsh\aaaaaaa-watch\" -Force
-schtasks /Create /F /TN "dsh-aaaaaaa watch" /SC MINUTE /MO 5 /TR "powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File %USERPROFILE%\.dsh\aaaaaaa-watch\watchdog.ps1"
+Copy-Item .\watchdog\watchdog.ps1, .\watchdog\run.cmd, .\watchdog\run-hidden.vbs "$env:USERPROFILE\.dsh\aaaaaaa-watch\" -Force
+schtasks /Create /F /TN "dsh-aaaaaaa watch" /SC MINUTE /MO 5 /TR "wscript.exe \"%USERPROFILE%\.dsh\aaaaaaa-watch\run-hidden.vbs\""
 ```
 
-手动跑一次：双击 `%USERPROFILE%\.dsh\aaaaaaa-watch\run.cmd`。
+手动跑一次（想看到过程）：双击 `%USERPROFILE%\.dsh\aaaaaaa-watch\run.cmd`；计划任务用的是静默版 `run-hidden.vbs`。
 关闭自动写回：在 `%USERPROFILE%\.dsh\guardian\watchdog.json` 里设 `{"autoRestore": false}`，看门狗就只做「补登记」，不碰你的配置。
 
 > macOS / Linux 上不需要它，重置后重启一次 DSH 即可。

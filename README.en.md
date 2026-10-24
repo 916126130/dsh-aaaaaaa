@@ -81,6 +81,7 @@ Local plugin:
 
 | Version | Change |
 |---|---|
+| 1.3.3 | Watchdog now starts via `run-hidden.vbs`, so no window flashes every 5 minutes |
 | 1.3.2 | Sidebar row now reads “一键守护” too (package/dir stay `dsh-aaaaaaa` so it is easy to find in the plugin list) |
 | 1.3.1 | Panel renamed 一键守护; bilingual docs; copy no longer describes automatic post-reset behavior |
 | 1.3.0 | Renamed to `dsh-aaaaaaa`; watchdog added; self-registration always preserved; legacy names cleaned |
@@ -92,7 +93,7 @@ Local plugin:
 
 ## Optional: watchdog (auto-restore after a reset)
 
-After a reset the plugin is not loaded, so the panel cannot appear either. The watchdog is a small script **outside** DSH, run every 5 minutes by Windows Task Scheduler:
+After a reset the plugin is not loaded, so the panel cannot appear either. The watchdog is a small script **outside** DSH, run every 5 minutes by Windows Task Scheduler. The task launches it through `run-hidden.vbs`, so **no window appears and nothing flashes**; results go to `~/.dsh/guardian/watchdog.log` only:
 
 - if the plugin registration was wiped from the profile, it puts it back;
 - if the startup list collapsed to official bundles only, it writes back the newest **healthy** snapshot and re-adds this plugin.
@@ -101,8 +102,8 @@ Install (from the repository root):
 
 ```powershell
 New-Item -ItemType Directory -Force "$env:USERPROFILE\.dsh\aaaaaaa-watch" | Out-Null
-Copy-Item .\watchdog\watchdog.ps1, .\watchdog\run.cmd "$env:USERPROFILE\.dsh\aaaaaaa-watch\" -Force
-schtasks /Create /F /TN "dsh-aaaaaaa watch" /SC MINUTE /MO 5 /TR "powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File %USERPROFILE%\.dsh\aaaaaaa-watch\watchdog.ps1"
+Copy-Item .\watchdog\watchdog.ps1, .\watchdog\run.cmd, .\watchdog\run-hidden.vbs "$env:USERPROFILE\.dsh\aaaaaaa-watch\" -Force
+schtasks /Create /F /TN "dsh-aaaaaaa watch" /SC MINUTE /MO 5 /TR "wscript.exe \"%USERPROFILE%\.dsh\aaaaaaa-watch\run-hidden.vbs\""
 ```
 
 Disable auto-restore by setting `{"autoRestore": false}` in `%USERPROFILE%\.dsh\guardian\watchdog.json`; the watchdog then only re-registers the plugin.

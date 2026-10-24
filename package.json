@@ -1,6 +1,6 @@
 {
   "name": "dsh-aaaaaaa",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "private": false,
   "type": "module",
   "description": "一键守护 · 记录可用的插件与设置，重置后一键还原。One-click guardian for DSH: snapshot a working plugin setup and restore it after a reset.",
