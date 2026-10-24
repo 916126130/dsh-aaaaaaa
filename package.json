@@ -1,6 +1,6 @@
 {
   "name": "dsh-yijianhuifu",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "private": false,
   "type": "module",
   "description": "一键恢复插件与设置：记录「能正常跑」的插件清单和设置，DSH 因插件不兼容被重置后，从侧边栏一键写回。One-click restore of plugins & settings after the third-party plugin reset.",
