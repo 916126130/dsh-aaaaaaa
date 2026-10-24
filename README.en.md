@@ -61,6 +61,7 @@ Local plugin:
 
 | Version | Change |
 |---|---|
+| 1.3.2 | Sidebar row now reads “一键守护” too (package/dir stay `dsh-aaaaaaa` so it is easy to find in the plugin list) |
 | 1.3.1 | Panel renamed 一键守护; bilingual docs; copy no longer describes automatic post-reset behavior |
 | 1.3.0 | Renamed to `dsh-aaaaaaa`; watchdog added; self-registration always preserved; legacy names cleaned |
 | 1.2.3 | Panel shows the "always keeps itself" status with a one-click repair |
