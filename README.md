@@ -1,108 +1,105 @@
-# 一键恢复插件预设置 · dsh-yijianhuifu
+# dsh-aaaaaaa · 一键恢复插件预设置
 
-> 记住你「插件能正常启动」的那份配置，在 DSH 因为不兼容把你打回「禁用所有插件 + 清空设置」之后，一键把插件和设置还原回来。
-
-侧边栏入口在「新会话」下面那一列，图标是头像，名字叫 **插件一键恢复**。
-
----
+> 记录一份「能正常跑」的插件清单与设置；DSH 因插件不兼容被迫**禁用第三方插件（恢复出厂）**之后，一键写回。
+> 名字特意起成 `aaaaaaa`，就是为了在插件列表里一眼能找到、排在最前面。
 
 ## 它解决什么问题
 
-DSH 启动时会检查插件。一旦某个插件和当前版本不兼容，启动失败，系统会让你选「禁用第三方插件 / 退出 / 重启」。点「禁用第三方插件」之后：
+DSH 启动失败时会弹「禁用第三方插件」——这一步会：
 
-- `profiles/desktop/cordis.patch.yml` 被改名备份（所有个性化设置清空）；
-- `profiles/desktop/package.json` 里的启动项被重置回官方两项（所有第三方插件停用）；
-- 下次启动就变回「出厂状态」，你得自己一个个回忆、一个个装回去。
+- 把 `profiles/<name>/cordis.patch.yml` 改名成 `.bak-<时间戳>`（你的设置层被移走）；
+- 把 `dsh.profile.bundles` 重置成只剩官方两项。
 
-本插件做三件事：
+结果就是：插件全没了、设置全没了，你得一个个回忆当初装了什么。
 
-1. **自动留底**：插件加载时先把当前配置存成 `pending`，等它稳定运行 75 秒没有崩溃，再升级成 `healthy`（健康快照）。只有「真的跑得起来」的配置才会被标成健康。
-2. **配置一变就留底**：你在外面装插件、改设置，只要改了 `package.json` 或 `cordis.patch.yml`，4 秒后自动存一份 `pending`。
-3. **界面上点一下就能回来**：崩溃重置后，侧边栏那个入口还在（原理见下文），点它选一份 `healthy` 快照 → 恢复 → 完全退出 DSH 再打开，一切回来。
+这个插件把「好的时候长什么样」记下来，随时写回去。更关键的是：**它自己不会被这次重置带走**。
 
-## 为什么重置之后它还在
+## 三层保障
 
-「禁用第三方插件」只清理 profile 目录里的东西，**不会动 harness 家目录那一层**的 `cordis.patch.yml`（`~/.dsh/cordis.patch.yml`，Windows 是 `C:\Users\<你>\.dsh\cordis.patch.yml`）。本插件就注册在那一层，所以被重置后仍然会加载、侧边栏入口还在。
+| 层级 | 做什么 | 触发时机 |
+|---|---|---|
+| ① 面板 | 侧边栏「dsh-aaaaaaa」入口，列出所有快照，点「恢复」写回 | 插件正常加载时 |
+| ② 恢复时强制保留 | 恢复任何快照都会把本插件自己的登记**强制**塞回 profile，哪怕那份快照里没有它 | 每次恢复 / 每次修复 |
+| ③ 看门狗 | 每 5 分钟（以及开机登录）检查一次：profile 被重置就自动写回最近一份健康快照，并补回本插件登记 | DSH 没启动也能跑 |
 
-> 有一个必须知道的边界：**点「禁用第三方插件」那一次，插件是当场被卸掉的，面板会消失**。此时请把 DSH 完全退出（Windows 托盘图标也要退出）再打开，插件会从家目录那一层重新加载，面板就回来了 —— 然后才能点恢复。这不是缺陷，是「谁在加载插件」决定的顺序。
+> ⚠️ **如果重置后面板没有自动回来**（说明当时进程是「禁用插件」后原地重建、没有重新读 profile），请手动运行一次：
+>
+> - 桌面上的 **`dsh-aaaaaaa-restore.cmd`**（双击即可），或
+> - `%USERPROFILE%\.dsh\aaaaaaa-watch\run.cmd`
+>
+> 它会立刻把本插件重新登记、并把最近一份健康快照写回去，然后**完全退出 DSH 再打开**，面板就回来了。
+
+## 快照怎么来
+
+- **自动**：插件每次启动时记一份 `pending`（待验证）；启动成功且配置在 **75 秒**内没再变动，改判为 `healthy`（已验证可用）。
+- **手动**：面板上点「+ 记录当前配置」。
+- **恢复前备份**：每次点「恢复」之前，先把当前状态存成 `pre-restore`，恢复错了还能退回来。
+- 保留 **15 份**（其中健康快照最多 10 份），超出自动删最旧的；「当前配置」「恢复前备份」不会挤占这 15 份。
 
 ## 安装
 
-### 方式一：本地目录 + 家目录注册（推荐，也最快）
+本插件是**本地插件**（不发布到 npm），装法：
 
-1. 把整个 `dsh-yijianhuifu` 目录放到 `C:\Users\<你>\.dsh\plugins\dsh-yijianhuifu`。
-2. 编辑（没有就新建）`C:\Users\<你>\.dsh\cordis.patch.yml`，追加：
+1. 把 `dsh-aaaaaaa` 目录放到 `%USERPROFILE%\.dsh\plugins\dsh-aaaaaaa`；
+2. 在 `%USERPROFILE%\.dsh\profiles\desktop\package.json` 里加：
+   ```json
+   "dependencies": { "dsh-aaaaaaa": "file:../../plugins/dsh-aaaaaaa" },
+   "dsh": { "profile": { "bundles": [ "…原有项…", "dsh-aaaaaaa" ] } }
+   ```
+3. 建目录链接（PowerShell，普通权限即可）：
+   ```bat
+   cmd /c mklink /J "%USERPROFILE%\.dsh\profiles\desktop\node_modules\dsh-aaaaaaa" "%USERPROFILE%\.dsh\plugins\dsh-aaaaaaa"
+   ```
+4. 完全退出 DSH 再打开。
 
-```yaml
-- insert:
-    - id: yijianhuifu-home
-      name: ./plugins/dsh-yijianhuifu
+看门狗（可选但强烈建议）：
+
+```bat
+schtasks /Create /F /TN "dsh-aaaaaaa watch" /SC MINUTE /MO 5 /TR "powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File \"%USERPROFILE%\.dsh\aaaaaaa-watch\watchdog.ps1\""
 ```
 
-3. 完全退出 DSH 再打开。侧边栏「新会话」下面会出现 **插件一键恢复**。
+## 数据在哪
 
-> `name` 里写相对路径即可（相对于这个 patch 文件所在的家目录），DSH 会自动解析成 file URL；写 `C:/...` 绝对路径也行。
+| 路径 | 内容 |
+|---|---|
+| `%USERPROFILE%\.dsh\guardian\snapshots\` | 所有快照（`package.json` + `cordis.patch.yml` + `meta.json`） |
+| `%USERPROFILE%\.dsh\guardian\status.json` | 当前进程心跳（pid / 版本 / 启动项数） |
+| `%USERPROFILE%\.dsh\guardian\guardian.log` | 插件日志 |
+| `%USERPROFILE%\.dsh\guardian\watchdog.log` | 看门狗日志 |
+| `%USERPROFILE%\.dsh\guardian\watchdog.json` | `{"autoRestore": true}`，设 false 关掉自动写回 |
 
-### 方式二：作为插件安装（发布到市场 / GitHub 之后）
+## 看门狗判定规则
 
-插件市场或「添加插件」对话框接受的是**包名 / GitHub 仓库地址 / 本地目录路径**，不是某个 yml 文件的路径。发布后填 `your-name/dsh-yijianhuifu` 这样的仓库地址即可。
-
-### 方式三：手动写进 profile
-
-`profiles/desktop/package.json`：
-
-```json
-"dependencies": { "dsh-yijianhuifu": "file:../../plugins/dsh-yijianhuifu" }
-"dsh": { "profile": { "bundles": [ "...官方项...", "yijianhuifu" ] } }
-```
-
-## 界面怎么用
-
-- **顶部状态**：当前「已安装 N 个插件 / 启动项 M 个」。两边不一致时会直接告诉你差在哪 —— 比如「装了 a 插件但没生效，完全退出再打开才会运行」，正是「装完不重启看不出效果」那种情况。
-- **快照列表**：每条显示时间、健康/待确认/恢复前 徽章、当时的插件数与启动项数。
-  - 「恢复」= 把那份快照的设置文件和插件清单写回去（恢复前会先把当前状态存成 `pre-restore`，再点一次就能反悔）。**恢复时会强制把守护插件自己写回启动项**（即使那份快照里没有它），所以无论恢复哪一份、之后重置多少次，面板都会跟着回来。
-  - 「立即记录」= 手动存一份健康快照。
-  - 旧的快照会自动轮换，最多留 15 份。
-- **常驻保护 / Guard**：显示守护插件自己的注册状态（ON/OFF）。如果是 OFF，面板上会直接出现「立即修复守护插件」按钮。
-- **恢复之后**：必须完全退出 DSH 再打开，新配置才会生效（界面里也写了这句）。
-
-## 快照保留规则
-
-- 最多保留 **15 份**，超出后从最旧的开始删；
-- 其中健康快照至少保留 **10 份**（待确认/恢复前的会被优先清掉）；
-- 快照很轻（只存 `package.json`、`cordis.patch.yml`，健康快照还带一份 `pnpm-lock.yaml`），15 份也就几百 KB。
-
-## 数据与隐私
-
-所有文件都在本机：
-
-```
-C:\Users\<你>\.dsh\guardian\
-├─ snapshots\<时间戳>-<类型>\   # package.json / cordis.patch.yml / meta.json
-├─ status.json                  # 插件运行状态与心跳
-└─ guardian.log                 # 操作日志
-```
-
-不联网、不上传、不读聊天内容。卸载插件时这些文件可以一起删。
-
-## 常见问题
-
-**侧边栏没有入口？**
-1. 确认 `~/.dsh/cordis.patch.yml` 里那两行 insert 还在；
-2. 确认是「完全退出」而不是只关窗口（托盘里退出）；
-3. 看 `~/.dsh/guardian/guardian.log` 有没有加载记录。
-
-**恢复之后一启动又崩？**
-说明那份快照里也有坏插件。换更早的 `healthy` 快照再恢复；实在不行只恢复设置，把崩溃前新装的那个插件从启动项里去掉。
-
-**会不会把我刚装的插件弄丢？**
-恢复是「回到那份快照」，快照里没有的插件依赖会被去掉。恢复前系统已经把当前状态存成 `pre-restore`，不满意可以恢复它。
+1. 每 5 分钟（开机登录也会跑一次）；
+2. 先确保本插件自己还登记在 profile 里（被抹掉就补回，并重建 `node_modules` 链接）；
+3. 再看 `bundles` 里第三方条目是否只剩 ≤1 个 —— 是就认定「被重置」，把最新一份 `healthy` 快照的 `package.json` + `cordis.patch.yml` 写回，并把本插件重新并入启动项；
+4. 全程只操作本地文件，不联网。
 
 ## 版本
 
-- 1.2.1：面板内列表与整体可滚动（快照很多也能看到下面的使用注意）
-- 1.2.2：恢复时保留本插件自己的注册；每次加载自愈（profile 缺注册就补回），恢复后自动重建 node_modules 链接
-- 1.2.1：面板与快照列表可滚动
-- 1.2.0：改名 dsh-yijianhuifu、头像图标、15 份轮换、安装数/启动数提示、恢复前自动留底
-- 1.1.0：客户端面板 + 家目录层注册（重置后仍可打开）
-- 1.0.0：宿主端快照引擎
+| 版本 | 说明 |
+|---|---|
+| 1.3.0 | 改名 `dsh-aaaaaaa`；加看门狗；恢复/修复时强制保留自身；清掉旧包名残留 |
+| 1.2.3 | 面板显示「常驻保护」状态与一键修复 |
+| 1.2.2 | 恢复时不再剥离自身注册 |
+| 1.2.1 | 面板与快照列表可滚动 |
+| 1.2.0 | 侧边栏面板 + HTTP 接口 |
+| 1.1.0 | 宿主侧 v1.1 |
+| 1.0.0 | 首个可用版本（快照引擎） |
+
+## 已知边界
+
+- **「禁用第三方插件」不会重启进程**：插件树是原地重建的，所以那一刻本插件一定不在；面板要等下一次**完全重启**才会回来（或手动跑一次看门狗）。
+- 恢复后必须**完全退出 DSH**（托盘也要退）再打开，新的插件列表才生效。
+- 快照只记 `package.json` 与 `cordis.patch.yml`；插件代码本身在 `~/.dsh/plugins` 和各插件自己的目录里，恢复不会重装插件。
+
+## 卸载
+
+1. 删 `profiles/<name>/package.json` 里的 `dsh-aaaaaaa` 依赖与启动项；
+2. 删 `profiles/<name>/node_modules/dsh-aaaaaaa` 链接与 `~/.dsh/plugins/dsh-aaaaaaa`；
+3. 删计划任务：`schtasks /Delete /TN "dsh-aaaaaaa watch" /F`；
+4. 数据目录 `~/.dsh/guardian` 可留作备份，也可整目录删掉。
+
+## License
+
+MIT

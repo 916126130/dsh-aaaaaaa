@@ -1,9 +1,9 @@
 {
-  "name": "dsh-yijianhuifu",
-  "version": "1.2.3",
+  "name": "dsh-aaaaaaa",
+  "version": "1.3.0",
   "private": false,
   "type": "module",
-  "description": "一键恢复插件与设置：记录「能正常跑」的插件清单和设置，DSH 因插件不兼容被重置后，从侧边栏一键写回。One-click restore of plugins & settings after the third-party plugin reset.",
+  "description": "一键恢复插件预设置：记录「能正常跑」的插件清单与设置，重置后一键写回。若重置后本插件未启动，请手动运行 ~/.dsh/aaaaaaa-watch/run.cmd。",
   "keywords": [
     "dsh",
     "dsh-plugin",
@@ -44,10 +44,10 @@
   "author": "江 + DSH",
   "repository": {
     "type": "git",
-    "url": "https://github.com/916126130/dsh-yijianhuifu.git"
+    "url": "https://github.com/916126130/dsh-aaaaaaa.git"
   },
   "bugs": {
-    "url": "https://github.com/916126130/dsh-yijianhuifu/issues"
+    "url": "https://github.com/916126130/dsh-aaaaaaa/issues"
   },
-  "homepage": "https://github.com/916126130/dsh-yijianhuifu#readme"
+  "homepage": "https://github.com/916126130/dsh-aaaaaaa#readme"
 }
