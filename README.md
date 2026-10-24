@@ -69,6 +69,26 @@
 | 1.2.0 | 侧边栏面板 + HTTP 接口 |
 | 1.0.0 | 首个可用版本（快照引擎） |
 
+## 可选：看门狗（重置后自动写回）
+
+重置后插件本身不会被加载，面板自然不会出现。看门狗是一个**独立于 DSH 的小脚本**，由 Windows 计划任务每 5 分钟跑一次：
+
+- 发现 profile 里的本插件登记被抹掉 → 立刻补回；
+- 发现启动项被重置成「只剩官方」→ 自动写回最近一份**健康快照**，并把本插件重新并入。
+
+安装（在仓库根目录执行）：
+
+```powershell
+New-Item -ItemType Directory -Force "$env:USERPROFILE\.dsh\aaaaaaa-watch" | Out-Null
+Copy-Item .\watchdog\watchdog.ps1, .\watchdog\run.cmd "$env:USERPROFILE\.dsh\aaaaaaa-watch\" -Force
+schtasks /Create /F /TN "dsh-aaaaaaa watch" /SC MINUTE /MO 5 /TR "powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File %USERPROFILE%\.dsh\aaaaaaa-watch\watchdog.ps1"
+```
+
+手动跑一次：双击 `%USERPROFILE%\.dsh\aaaaaaa-watch\run.cmd`。
+关闭自动写回：在 `%USERPROFILE%\.dsh\guardian\watchdog.json` 里设 `{"autoRestore": false}`，看门狗就只做「补登记」，不碰你的配置。
+
+> macOS / Linux 上不需要它，重置后重启一次 DSH 即可。
+
 ## 卸载
 
 1. 删 `profiles/<name>/package.json` 里的 `dsh-aaaaaaa` 依赖与启动项；

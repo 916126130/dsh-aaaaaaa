@@ -69,6 +69,25 @@ Local plugin:
 | 1.2.0 | Sidebar panel + HTTP routes |
 | 1.0.0 | First working version (snapshot engine) |
 
+## Optional: watchdog (auto-restore after a reset)
+
+After a reset the plugin is not loaded, so the panel cannot appear either. The watchdog is a small script **outside** DSH, run every 5 minutes by Windows Task Scheduler:
+
+- if the plugin registration was wiped from the profile, it puts it back;
+- if the startup list collapsed to official bundles only, it writes back the newest **healthy** snapshot and re-adds this plugin.
+
+Install (from the repository root):
+
+```powershell
+New-Item -ItemType Directory -Force "$env:USERPROFILE\.dsh\aaaaaaa-watch" | Out-Null
+Copy-Item .\watchdog\watchdog.ps1, .\watchdog\run.cmd "$env:USERPROFILE\.dsh\aaaaaaa-watch\" -Force
+schtasks /Create /F /TN "dsh-aaaaaaa watch" /SC MINUTE /MO 5 /TR "powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File %USERPROFILE%\.dsh\aaaaaaa-watch\watchdog.ps1"
+```
+
+Disable auto-restore by setting `{"autoRestore": false}` in `%USERPROFILE%\.dsh\guardian\watchdog.json`; the watchdog then only re-registers the plugin.
+
+> Not needed on macOS / Linux: a single DSH restart is enough there.
+
 ## Uninstall
 
 1. Remove the `dsh-aaaaaaa` dependency and bundle entry from `profiles/<name>/package.json`;
