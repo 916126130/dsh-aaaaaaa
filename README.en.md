@@ -4,9 +4,29 @@ English | [简体中文](README.md)
 
 > Saves the one plugin setup that actually works. When a bad plugin forces DSH back to "all plugins disabled + settings wiped", come back and restore it with one click.
 
-The package is called `dsh-aaaaaaa`, and that is also the name shown in the sidebar — so it sorts to the very top of your plugin list and is easy to find.
+The package is called `dsh-aaaaaaa`; the sidebar row and the panel are titled **一键守护** (One-click Guard). The aaa suffix only makes the package sort to the very top of your plugin list.
 
 ---
+
+## Screenshots
+
+### Sidebar entry
+
+In the left column under “新会话”, right below “技能中心”:
+
+![Sidebar entry](docs/images/sidebar.png)
+
+### The panel
+
+Installed plugins / startup bundles / snapshots / guard status on top; every snapshot has a Restore button.
+
+![Panel](docs/images/panel.png)
+
+### What you see when it breaks
+
+An incompatible plugin makes DSH fail at boot and show this dialog. Choosing “disable third-party plugins” is a factory reset — reopen the panel afterwards, hit Restore once, then fully quit and relaunch DSH.
+
+![Startup failed](docs/images/startup-failed.png)
 
 ## What it does
 
